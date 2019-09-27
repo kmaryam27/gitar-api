@@ -7,7 +7,7 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
 @Entity
-public class Guitar {
+public class Guitar {//2
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,7 +17,8 @@ public class Guitar {
     private String brand;
     private int strings;
 
-    public Guitar(@NotNull String model, @NotNull String brand, int strings) {
+    public Guitar(Long id, @NotNull String model, @NotNull String brand, int strings) {
+        this.id = id;
         this.model = model;
         this.brand = brand;
         this.strings = strings;
