@@ -24,6 +24,12 @@ public class Guitar {//2
         this.strings = strings;
     }
 
+    public Guitar(@NotNull String model, @NotNull String brand, int strings) {
+        this.model = model;
+        this.brand = brand;
+        this.strings = strings;
+    }
+
     public Guitar(){}
 
     public Long getId() {

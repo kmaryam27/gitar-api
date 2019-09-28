@@ -6,6 +6,8 @@ import com.galvanize.simplegitarapi.repositories.GuitarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class GuitarService {//6
 
@@ -21,4 +23,14 @@ public class GuitarService {//6
         if (guitar == null) throw new GuitarNotFoundException();
         return guitar;
     }
+
+    public Guitar getSelectedGuitarById(Long id) {
+        if (guitarRepository.findById(id) == null) throw new GuitarNotFoundException();
+        return guitarRepository.findById(id).get();
+    }
+
+    public List<Guitar> getAllGuitarGitarsDetails() {
+        return guitarRepository.findAll();
+    }
+
 }

@@ -13,11 +13,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GuitarTest {//1
     @Test
     public void isGuitarInstance(){
-        Guitar guitar = new Guitar(3l, "Guild", "D45Bld", 7);
+        Guitar guitar = new Guitar("Guild", "D45Bld", 7);
         assertThat(guitar.getModel()).isEqualTo("Guild");
         assertThat(guitar.getBrand()).isEqualTo("D45Bld");
         assertThat(guitar.getStrings()).isEqualTo(7);
-        assertThat(guitar.getId()).isEqualTo(3l);
+        assertThat(guitar.getId()).isEqualTo(null);
 
     }
 }
