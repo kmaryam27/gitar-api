@@ -40,8 +40,10 @@ public class GuitarServiceTest {//7
     /*********************************findByModel************************************************/
     @Test
     public void getSelectedGuitarByModel_returnGuitarDetails() {
-        given(guitarRepository.findByModel(anyString())).willReturn(new Guitar(3l,"Guild","D45Bld", 7));
-        Guitar guitar = guitarService.getSelectedGuitarByModel("Guild");
+        Guitar guitar = new Guitar("Guild","D45Bld", 7);
+        guitar.setId(3l);
+        given(guitarRepository.findByModel(anyString())).willReturn(guitar);
+        guitar = guitarService.getSelectedGuitarByModel("Guild");
         assertThat(guitar.getId()).isNotNull();
         assertThat(guitar.getStrings()).isEqualTo(7);
         assertThat(guitar.getBrand()).isEqualTo("D45Bld");

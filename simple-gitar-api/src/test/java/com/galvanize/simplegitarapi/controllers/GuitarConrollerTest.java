@@ -37,7 +37,10 @@ public class GuitarConrollerTest {//4
     /*****************************getGuitarByModel************************************/
     @Test
     public void getGuitarByModel_shouldReturnsGitarDetails() throws Exception{
-        given(guitarService.getSelectedGuitarByModel(anyString())).willReturn(new Guitar(3l,"Guild","D45Bld", 7));
+        Guitar guitar = new Guitar("Guild","D45Bld", 7);
+        guitar.setId(3l);
+        given(guitarService.getSelectedGuitarByModel(anyString())).willReturn(guitar);
+
         mockMvc.perform(MockMvcRequestBuilders.get("/guitars/model/c"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("model").value("Guild"))
@@ -58,7 +61,9 @@ public class GuitarConrollerTest {//4
 
     @Test
     public void getGuitarById_shouldReturnsGitarDetails() throws Exception{
-        given(guitarService.getSelectedGuitarById(anyLong())).willReturn(new Guitar(3l,"Guild","D45Bld", 7));
+        Guitar guitar = new Guitar("Guild","D45Bld", 7);
+        guitar.setId(3l);
+        given(guitarService.getSelectedGuitarById(anyLong())).willReturn(guitar);
         mockMvc.perform(MockMvcRequestBuilders.get("/guitars/3"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("model").value("Guild"))

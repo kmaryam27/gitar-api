@@ -17,13 +17,6 @@ public class Guitar {//2
     private String brand;
     private int strings;
 
-    public Guitar(Long id, @NotNull String model, @NotNull String brand, int strings) {
-        this.id = id;
-        this.model = model;
-        this.brand = brand;
-        this.strings = strings;
-    }
-
     public Guitar(@NotNull String model, @NotNull String brand, int strings) {
         this.model = model;
         this.brand = brand;
