@@ -17,19 +17,19 @@ public class GuitarController {//5
     @Autowired
     private GuitarService guitarService;
 
+    /***************************find a Gitar by uniqu model*********************************/
     @GetMapping("/model/{model}")
     private Guitar getGuitarByModel(@PathVariable String model){
         return guitarService.getSelectedGuitarByModel(model);
     }
 
+    /***************************find a Gitar by uniqu Id*********************************/
     @GetMapping("/{id}")
     private Guitar getGuitarById(@PathVariable Long id){
         return guitarService.getSelectedGuitarById(id);
     }
 
-//    @GetMapping("/{id}/{model}")
-//    private Guitar getGuitarById(@RequestParam String id, )
-
+    /***************************get all Gitars *********************************/
     @GetMapping
     private List<Guitar> getAllGuitars(){
         return guitarService.getAllGuitarGitarsDetails();

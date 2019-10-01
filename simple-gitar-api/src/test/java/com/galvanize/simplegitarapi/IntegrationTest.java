@@ -38,12 +38,12 @@ public class IntegrationTest {//3
     @MockBean
     GuitarRepository guitarRepository;
 
+    Guitar guitar;
     @Before
     public void init() {
         // before every test, this will create a guitar
-        Guitar guitar = new Guitar("LesPaul", "Gibson", 5);
-        // use the mock repository to avoid HTTP 404 error
-        when(guitarRepository.findByModel("LesPaul")).thenReturn(guitar);
+        guitar = new Guitar("Guild","D45Bld", 7);
+        guitar.setId(7l);
     }
 
     // Utility method for creating URLs
@@ -54,33 +54,34 @@ public class IntegrationTest {//3
     /*****************************getGitarByModel************************************/
     @Test
     public void getGitarByModel_returnsGitarDetails() throws Exception{
-        //arrange
-        // getForEntity() requires the full URI path, not a relative path
-        String url = getFullUri("/guitars/model/LesPaul");
+        //arrange : getForEntity() requires the full URI path, not a relative path
+        // use the mock repository to avoid HTTP 404 error
+        when(guitarRepository.findByModel("Guild")).thenReturn(guitar);
+        String url = getFullUri("/guitars/model/Guild");
 
         //act
         ResponseEntity<String> gitarResponseEntity = testRestTemplate.getForEntity(url, String.class);
         //assert
         assertThat(gitarResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(gitarResponseEntity.getBody()).contains("LesPaul");
-        assertThat(gitarResponseEntity.getBody()).contains("Gibson");
-        assertThat(gitarResponseEntity.getBody()).contains("5");
+        assertThat(gitarResponseEntity.getBody()).contains("Guild");
+        assertThat(gitarResponseEntity.getBody()).contains("D45Bld");
+        assertThat(gitarResponseEntity.getBody()).contains("7");
     }
 
     /*****************************getGitarById************************************/
     @Test
     public void getGitarById_returnsGitarDetails() throws Exception{
         //arrange
-//        Guitar guitar = new Guitar("Guild", "D45Bld",7);
-//        guitarRepository.save(guitar);
-        given(guitarRepository.findById(anyLong())).willReturn(Optional.of(new Guitar("Guild","D45Bld", 7)));
+        when(guitarRepository.findById(7l)).thenReturn(Optional.of(guitar));
+        String url = getFullUri("/guitars/7");
+
         //act
-        ResponseEntity<Guitar> gitarResponseEntity = testRestTemplate.getForEntity("/guitars/2", Guitar.class);
+        ResponseEntity<String> gitarResponseEntity = testRestTemplate.getForEntity(url, String.class);
         //assert
         assertThat(gitarResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(gitarResponseEntity.getBody().getModel()).isEqualTo("Guild");
-        assertThat(gitarResponseEntity.getBody().getBrand()).isEqualTo("D45Bld");
-        assertThat(gitarResponseEntity.getBody().getStrings()).isEqualTo(7);
+        assertThat(gitarResponseEntity.getBody()).contains("Guild");
+        assertThat(gitarResponseEntity.getBody()).contains("D45Bld");
+        assertThat(gitarResponseEntity.getBody()).contains("7");
     }
 
     /*****************************getAllGitar************************************/
@@ -88,18 +89,26 @@ public class IntegrationTest {//3
     public void getAllGitars_returnsGitarsDetails() throws Exception{
         //arrange
         List<Guitar> guitarList = new ArrayList<>();
-        Guitar guitar = new Guitar("Guild", "D45Bld",7);
-        guitar = guitarRepository.save(guitar);
-        Guitar guitar1 = new Guitar("Guild", "D45Bld",7);
-        guitar1 = guitarRepository.save(guitar1);
+        Guitar guitar1 = new Guitar("Guild2", "D45Bld2",27);
+        guitar1.setId(8l);
         guitarList.add(guitar);
         guitarList.add(guitar1);
 
-        given(guitarRepository.findAll()).willReturn(guitarList);
+        when(guitarRepository.findAll()).thenReturn(guitarList);
+
+        String url = getFullUri("/guitars");
         //act
-        ResponseEntity<Guitar> gitarResponseEntity = testRestTemplate.getForEntity("/guitars", Guitar.class);
+        ResponseEntity<String> gitarResponseEntity = testRestTemplate.getForEntity(url, String.class);
         //assert
         assertThat(gitarResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(gitarResponseEntity.hasBody()).isEqualTo(true);
+        assertThat(gitarResponseEntity.getBody()).contains("Guild");
+        assertThat(gitarResponseEntity.getBody()).contains("D45Bld");
+        assertThat(gitarResponseEntity.getBody()).contains("7");
+        //******second Gitar
+        assertThat(gitarResponseEntity.getBody()).contains("Guild2");
+        assertThat(gitarResponseEntity.getBody()).contains("D45Bld2");
+        assertThat(gitarResponseEntity.getBody()).contains("27");
+        System.out.println(gitarResponseEntity.getBody());
     }
 }
