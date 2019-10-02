@@ -2,13 +2,17 @@ package com.galvanize.simplegitarapi;
 
 import com.galvanize.simplegitarapi.entity.Guitar;
 import com.galvanize.simplegitarapi.repositories.GuitarRepository;
+import com.galvanize.simplegitarapi.services.GuitarService;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -51,7 +55,10 @@ public class IntegrationTest {//3
         return "http://localhost:" + port + endpoint;
     }
 
-    /*****************************getGitarByModel************************************/
+    /**
+     * getGitarByModel
+     * @throws Exception
+     */
     @Test
     public void getGitarByModel_returnsGitarDetails() throws Exception{
         //arrange : getForEntity() requires the full URI path, not a relative path
@@ -68,7 +75,10 @@ public class IntegrationTest {//3
         assertThat(gitarResponseEntity.getBody()).contains("7");
     }
 
-    /*****************************getGitarById************************************/
+    /**
+     * getGitarById
+     * @throws Exception
+     */
     @Test
     public void getGitarById_returnsGitarDetails() throws Exception{
         //arrange
@@ -84,7 +94,10 @@ public class IntegrationTest {//3
         assertThat(gitarResponseEntity.getBody()).contains("7");
     }
 
-    /*****************************getAllGitar************************************/
+    /**
+     * getAllGitar
+     * @throws Exception
+     */
     @Test
     public void getAllGitars_returnsGitarsDetails() throws Exception{
         //arrange
@@ -111,4 +124,22 @@ public class IntegrationTest {//3
         assertThat(gitarResponseEntity.getBody()).contains("27");
         System.out.println(gitarResponseEntity.getBody());
     }
+
+    /**
+     * create a Gitar
+     * @throws Exception
+     */
+    @Test
+    public void AddGitarSuccess_returnGitarDetails() throws Exception{
+        //arrange
+        Guitar myGuitar = new Guitar("Guild","D45Bld", 7);
+        when(guitarRepository.save(myGuitar)).thenReturn(guitar);
+        String url = getFullUri("/guitars");
+        HttpEntity<Guitar> request = new HttpEntity<>(guitar);
+        //act
+        ResponseEntity<String> gitarResponseEntity = testRestTemplate.postForEntity(url, request, String.class);
+        //assert
+        Assert.assertEquals(201, gitarResponseEntity.getStatusCodeValue());
+    }
+
 }

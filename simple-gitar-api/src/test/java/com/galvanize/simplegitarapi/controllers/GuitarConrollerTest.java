@@ -1,5 +1,6 @@
 package com.galvanize.simplegitarapi.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galvanize.simplegitarapi.entity.Guitar;
 import com.galvanize.simplegitarapi.exceptions.GuitarNotFoundException;
 import com.galvanize.simplegitarapi.services.GuitarService;
@@ -8,22 +9,21 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(GuitarController.class)
@@ -34,7 +34,11 @@ public class GuitarConrollerTest {//4
     @MockBean
     private GuitarService guitarService;
 
-    /*****************************getGuitarByModel************************************/
+    ObjectMapper mapper = new ObjectMapper();
+    /**
+     * getGuitarByModel
+     * @throws Exception
+     */
     @Test
     public void getGuitarByModel_shouldReturnsGitarDetails() throws Exception{
         Guitar guitar = new Guitar("Guild","D45Bld", 7);
@@ -57,8 +61,11 @@ public class GuitarConrollerTest {//4
                 .andExpect(status().isNotFound());
     }
 
-    /*****************************getGuitarById************************************/
 
+    /**
+     * getGuitarById
+     * @throws Exception
+     */
     @Test
     public void getGuitarById_shouldReturnsGitarDetails() throws Exception{
         Guitar guitar = new Guitar("Guild","D45Bld", 7);
@@ -79,7 +86,10 @@ public class GuitarConrollerTest {//4
                 .andExpect(status().isNotFound());
     }
 
-    /*****************************getAllGitars************************************/
+    /**
+     * getAllGitars
+     * @throws Exception
+     */
 
    @Test
     public void getAllGitars_shouldReturnAllGitarsDetailsFromDB() throws Exception{
@@ -97,6 +107,32 @@ public class GuitarConrollerTest {//4
        assertEquals(content,"[{\"id\":null,\"model\":\"Guild\",\"brand\":\"D45Bld\",\"strings\":7},{\"id\":null,\"model\":\"Guild2\",\"brand\":\"D45Bld2\",\"strings\":14}]");
    }
 
+    /**
+     * createNewGitar
+     * @throws Exception
+     */
+    @Test
+    public void addGitar_shouldReturnGitarDetailsFromDB() throws Exception{
+        Guitar inputGuitar = new Guitar("Guild","D45Bld", 7);
 
+        //Object to JSON in String
+        String inputJson = mapper.writeValueAsString(inputGuitar);
+
+        Guitar outputGuitar = new Guitar("Guild","D45Bld", 7);
+        outputGuitar.setId(7l);
+
+        //Object to JSON in String
+        String outputJson = mapper.writeValueAsString(outputGuitar);
+        given(guitarService.addNewGuitarInstance(any(Guitar.class))).willReturn(outputGuitar);
+
+        this.mockMvc.perform(post("/guitars")
+                .characterEncoding("utf-8")
+                .content(inputJson)
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().json(outputJson));
+    }
 
 }

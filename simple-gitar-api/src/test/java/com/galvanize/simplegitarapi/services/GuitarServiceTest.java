@@ -3,6 +3,7 @@ package com.galvanize.simplegitarapi.services;
 import com.galvanize.simplegitarapi.entity.Guitar;
 import com.galvanize.simplegitarapi.exceptions.GuitarNotFoundException;
 import com.galvanize.simplegitarapi.repositories.GuitarRepository;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,9 +38,12 @@ public class GuitarServiceTest {//7
         guitarService = new GuitarService(guitarRepository);//Injection like Autowired
     }
 
-    /*********************************findByModel************************************************/
+    /**
+     * findByModel
+     * @throws Exception
+     */
     @Test
-    public void getSelectedGuitarByModel_returnGuitarDetails() {
+    public void getSelectedGuitarByModel_returnGuitarDetails() throws Exception{
         Guitar guitar = new Guitar("Guild","D45Bld", 7);
         guitar.setId(3l);
         given(guitarRepository.findByModel(anyString())).willReturn(guitar);
@@ -56,9 +60,12 @@ public class GuitarServiceTest {//7
         guitarService.getSelectedGuitarByModel("Guild");
     }
 
-/*********************************findById************************************************/
+    /**
+     * findById
+     * @throws Exception
+     */
     @Test
-    public void getSelectedGuitarById_returnGuitarDetails() {
+    public void getSelectedGuitarById_returnGuitarDetails() throws Exception{
         given(guitarRepository.findById(anyLong())).willReturn(Optional.of(new Guitar("Guild","D45Bld", 7)));
         Guitar guitar = guitarService.getSelectedGuitarById(3l);
         assertThat(guitar.getId()).isNull();
@@ -73,10 +80,13 @@ public class GuitarServiceTest {//7
         guitarService.getSelectedGuitarById(3l);
     }
 
-    /*********************************findAll************************************************/
 
+    /**
+     * findAll
+     * @throws Exception
+     */
     @Test
-    public void getAllGuitars_returnAllGuitarsDetails() {
+    public void getAllGuitars_returnAllGuitarsDetails() throws Exception{
         List<Guitar> guitarList = new ArrayList<>();
         Guitar guitar = new Guitar("Guild", "D45Bld",7);
         Guitar guitar1 = new Guitar("Guild2", "D45Bld2",14);
@@ -86,6 +96,24 @@ public class GuitarServiceTest {//7
         List<Guitar> guitarList1 = guitarService.getAllGuitarGitarsDetails();
         assertThat(guitarList1).isNotNull();
         assertThat(guitarList1).isEqualTo(guitarList);
+    }
+
+    /**
+     * save one
+     * @throws Exception
+     */
+    @Test
+    public void saveGuitar_returnGuitarDetails() throws Exception{
+        Guitar inputGuitar = new Guitar("Guild", "D45Bld",7);
+        Guitar outputGuitar = new Guitar("Guild","D45Bld", 7);
+        outputGuitar.setId(7l);
+        given(guitarRepository.save(inputGuitar)).willReturn(outputGuitar);
+        Guitar resultGuitar = guitarService.addNewGuitarInstance(inputGuitar);
+        assertThat(resultGuitar).isNotNull();
+        assertThat(resultGuitar.getId()).isEqualTo(7l);
+        assertThat(resultGuitar.getModel()).contains("Guild");
+        assertThat(resultGuitar.getBrand()).contains("D45Bld");
+        assertThat(resultGuitar.getStrings()).isEqualTo(7);
     }
 
 

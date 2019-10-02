@@ -17,9 +17,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-//@RunWith(SpringRunner.class)
-//@DataJpaTest //when we rebuild project again this anotation does not work
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 public class GuitarRepositoryTest {
@@ -29,19 +26,12 @@ public class GuitarRepositoryTest {
     @Autowired
     private GuitarRepository guitarRepository;
 
-//    @Autowired
-//    private TestEntityManager testEntityManager;//part of DataJpaTest
-
-    @Before
-    public void setUp() throws Exception {
-
-    }
-
-
-    /**********************************findByModel******************************************/
+    /**
+     * findByModel
+     * @throws Exception
+     */
     @Test
     public void findByModel_returnGitarDetails() throws Exception{
-//        Guitar savedGuitar = testEntityManager.persistFlushFind(new Guitar(3l,"Guild","D45Bld", 7));
         guitarRepository.deleteAll();
         Guitar savedGuitar = new Guitar("Guild","D45Bld", 7);
         savedGuitar = guitarRepository.save(savedGuitar);
@@ -52,7 +42,10 @@ public class GuitarRepositoryTest {
         assertThat(guitar.getStrings()).isEqualTo(savedGuitar.getStrings());
     }
 
-    /**********************************findById******************************************/
+    /**
+     * findById
+     * @throws Exception
+     */
     @Test
     public void findById_returnGitarDetails() throws Exception{
         Guitar savedGuitar = new Guitar();
@@ -67,7 +60,10 @@ public class GuitarRepositoryTest {
         assertThat(guitar.getBrand()).isEqualTo(savedGuitar.getBrand());
     }
 
-    /**********************************findAll******************************************/
+    /**
+     * getAllGuitars from db
+     * @throws Exception
+     */
     @Test
     public void findAll_returnGitarDetails() throws Exception{
         guitarRepository.deleteAll();
@@ -79,6 +75,21 @@ public class GuitarRepositoryTest {
         assertThat(guitarList.get(0).getBrand()).isEqualTo(savedGuitar.getBrand());
         assertThat(guitarList.get(0).getModel()).isEqualTo(savedGuitar.getModel());
         assertThat(guitarList.get(0).getStrings()).isEqualTo(savedGuitar.getStrings());
+    }
+
+    /**
+     * addNewGuitar
+     * @throws Exception
+     */
+    @Test
+    public void save_returnGitarDetails() throws Exception{
+        guitarRepository.deleteAll();
+        Guitar savedGuitar = new Guitar("Guild","D45Bld", 7);
+        Guitar guitar = guitarRepository.save(savedGuitar);
+
+        assertThat(guitar.getModel()).isEqualTo(savedGuitar.getModel());
+        assertThat(guitar.getBrand()).isEqualTo(savedGuitar.getBrand());
+        assertThat(guitar.getStrings()).isEqualTo(savedGuitar.getStrings());
     }
 
 

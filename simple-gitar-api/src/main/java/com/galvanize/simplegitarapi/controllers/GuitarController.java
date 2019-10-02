@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,24 +18,55 @@ public class GuitarController {//5
     @Autowired
     private GuitarService guitarService;
 
-    /***************************find a Gitar by uniqu model*********************************/
+    /**
+     * find a Gitar by uniqu model
+     * @param model
+     * @return
+     */
     @GetMapping("/model/{model}")
     private Guitar getGuitarByModel(@PathVariable String model){
         return guitarService.getSelectedGuitarByModel(model);
     }
 
-    /***************************find a Gitar by uniqu Id*********************************/
+    /**
+     * find a Gitar by uniqu Id
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     private Guitar getGuitarById(@PathVariable Long id){
         return guitarService.getSelectedGuitarById(id);
     }
 
-    /***************************get all Gitars *********************************/
+    /**
+     * get all Gitars
+     * @return
+     */
     @GetMapping
     private List<Guitar> getAllGuitars(){
         return guitarService.getAllGuitarGitarsDetails();
     }
 
+    /* because for test we have to use variable of service only autowiring does not work*/
+    public GuitarController(GuitarService guitarService) {
+        this.guitarService = guitarService;
+    }
+
+    /**
+     * Add new Guitar
+     * @param guitar
+     * @return
+     */
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Guitar createGuitar(@RequestBody @Valid Guitar guitar) {
+            return guitarService.addNewGuitarInstance(guitar);
+    }
+
+    /**
+     * Exception Handler
+     * @param e
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     private void GuitarNotFoundHandler(GuitarNotFoundException e){}
