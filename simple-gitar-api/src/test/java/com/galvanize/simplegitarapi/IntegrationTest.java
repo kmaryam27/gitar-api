@@ -1,29 +1,29 @@
 package com.galvanize.simplegitarapi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galvanize.simplegitarapi.entity.Guitar;
 import com.galvanize.simplegitarapi.repositories.GuitarRepository;
-import com.galvanize.simplegitarapi.services.GuitarService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -43,6 +43,7 @@ public class IntegrationTest {//3
     GuitarRepository guitarRepository;
 
     Guitar guitar;
+    ObjectMapper mapper = new ObjectMapper();
     @Before
     public void init() {
         // before every test, this will create a guitar
@@ -132,14 +133,46 @@ public class IntegrationTest {//3
     @Test
     public void AddGitarSuccess_returnGitarDetails() throws Exception{
         //arrange
-        Guitar myGuitar = new Guitar("Guild","D45Bld", 7);
-        when(guitarRepository.save(myGuitar)).thenReturn(guitar);
+        when(guitarRepository.save(any(Guitar.class))).thenReturn(guitar);
         String url = getFullUri("/guitars");
         HttpEntity<Guitar> request = new HttpEntity<>(guitar);
+        String inputGuitar = mapper.writeValueAsString(guitar);
         //act
         ResponseEntity<String> gitarResponseEntity = testRestTemplate.postForEntity(url, request, String.class);
         //assert
-        Assert.assertEquals(201, gitarResponseEntity.getStatusCodeValue());
+        Assert.assertEquals(inputGuitar, gitarResponseEntity.getBody());
+        Assert.assertEquals("201 CREATED", gitarResponseEntity.getStatusCode().toString());
+
+        }
+
+    @Test
+    public void AddGitarSuccess_MissingHeader() throws URISyntaxException
+    {
+        String url = getFullUri("/guitars");
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<Guitar> request = new HttpEntity<>(guitar, headers);
+
+        ResponseEntity<Guitar> result = this.testRestTemplate.postForEntity(url, request, Guitar.class);
+
+        //Verify bad request and missing header
+        Assert.assertEquals(404, result.getStatusCodeValue());
     }
+
+    /*****************************updateGitar************************************/
+
+//    @Test
+//    public void updateSelectedGitar_returnGitarDetails() throws Exception{
+//        //arrange
+//        String url = getFullUri("/guitars/7");
+//        when(guitarRepository.save(any(Guitar.class))).thenReturn(guitar);
+//        HttpEntity<Guitar> request = new HttpEntity<>(guitar);
+//        //act
+//        ResponseEntity<Guitar> gitarResponseEntity = testRestTemplate.postForEntity(url, request, Guitar.class);
+//        //assert
+//        System.out.println(gitarResponseEntity);
+//        assertThat(gitarResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+////        assertThat(gitarResponseEntity.hasBody()).isEqualTo(true);
+////        Assert.assertEquals(201, gitarResponseEntity.getStatusCodeValue());
+//    }
 
 }

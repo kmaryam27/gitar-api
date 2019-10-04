@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +20,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -45,7 +45,7 @@ public class GuitarConrollerTest {//4
         guitar.setId(3l);
         given(guitarService.getSelectedGuitarByModel(anyString())).willReturn(guitar);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/guitars/model/c"))
+        mockMvc.perform(get("/guitars/model/c"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("model").value("Guild"))
                 .andExpect(jsonPath("brand").value("D45Bld"))
@@ -57,7 +57,7 @@ public class GuitarConrollerTest {//4
     @Test
     public void getGuitar_shouldrReturnNullException() throws Exception{
         given(guitarService.getSelectedGuitarByModel(anyString())).willThrow(new GuitarNotFoundException());
-        mockMvc.perform(MockMvcRequestBuilders.get("/guitars/model/Guild"))
+        mockMvc.perform(get("/guitars/model/Guild"))
                 .andExpect(status().isNotFound());
     }
 
@@ -71,7 +71,7 @@ public class GuitarConrollerTest {//4
         Guitar guitar = new Guitar("Guild","D45Bld", 7);
         guitar.setId(3l);
         given(guitarService.getSelectedGuitarById(anyLong())).willReturn(guitar);
-        mockMvc.perform(MockMvcRequestBuilders.get("/guitars/3"))
+        mockMvc.perform(get("/guitars/3"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("model").value("Guild"))
                 .andExpect(jsonPath("brand").value("D45Bld"))
@@ -82,7 +82,7 @@ public class GuitarConrollerTest {//4
     @Test
     public void getGuitarById_shouldrReturnNullException() throws Exception{
         given(guitarService.getSelectedGuitarById(anyLong())).willThrow(new GuitarNotFoundException());
-        mockMvc.perform(MockMvcRequestBuilders.get("/guitars/3"))
+        mockMvc.perform(get("/guitars/3"))
                 .andExpect(status().isNotFound());
     }
 
@@ -99,7 +99,7 @@ public class GuitarConrollerTest {//4
        guitarList.add(guitar);
        guitarList.add(guitar1);
         given(guitarService.getAllGuitarGitarsDetails()).willReturn(guitarList);
-       MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/guitars"))
+       MvcResult result = mockMvc.perform(get("/guitars"))
                 .andExpect(status().isOk())
                .andDo(print())
                .andReturn();
@@ -134,5 +134,32 @@ public class GuitarConrollerTest {//4
                 .andExpect(status().isCreated())
                 .andExpect(content().json(outputJson));
     }
+
+    @Test
+    public void addGitar_shouldrReturnNullException() throws Exception{
+        given(guitarService.getSelectedGuitarById(anyLong())).willThrow(new GuitarNotFoundException());
+        mockMvc.perform(post("/guitars")
+                .characterEncoding("utf-8")
+                .content(" ")
+                .contentType(MediaType.APPLICATION_JSON)
+        )
+                .andExpect(status().is4xxClientError());
+    }
+
+//    @Test
+//    public void updateGitar_shouldrReturngitarDetails() throws Exception{
+//
+//        Guitar outputGuitar = new Guitar("Guild","D45Bld", 7);
+//        outputGuitar.setId(7l);
+//        //Object to JSON in String
+//        String inputJson = mapper.writeValueAsString(outputGuitar);
+//        given(guitarService.updateSelectedGuitarById(anyLong(), any(Guitar.class))).willReturn(outputGuitar);
+//        mockMvc.perform(post("/guitars/7")
+//                .characterEncoding("utf-8")
+//                .content(inputJson)
+//                .contentType(MediaType.APPLICATION_JSON)
+//        )
+//                .andExpect(status().isOk());
+//    }
 
 }

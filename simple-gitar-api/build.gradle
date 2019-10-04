@@ -20,4 +20,5 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.junit.jupiter:junit-jupiter-engine:5.2.0')
+    compile group: 'org.springframework.hateoas', name: 'spring-hateoas', version: '0.16.0.RELEASE'
 }

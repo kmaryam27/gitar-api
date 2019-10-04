@@ -3,7 +3,6 @@ package com.galvanize.simplegitarapi.services;
 import com.galvanize.simplegitarapi.entity.Guitar;
 import com.galvanize.simplegitarapi.exceptions.GuitarNotFoundException;
 import com.galvanize.simplegitarapi.repositories.GuitarRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,6 +51,11 @@ public class GuitarService {//6
      * @return
      */
     public Guitar addNewGuitarInstance(Guitar guitar) {
+        if (guitarRepository.save(guitar) == null) throw new GuitarNotFoundException();
         return guitarRepository.save(guitar);
+    }
+
+    public Guitar updateSelectedGuitarById(Long id, Guitar guitar) {
+        return guitar;
     }
 }
